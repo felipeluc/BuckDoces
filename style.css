@@ -1,18 +1,22 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: Arial, sans-serif;
   margin: 0;
-  background-color: #f4f6f8;
-  color: #333;
-  padding: 20px;
-}
-
-h1 {
-  color: #004aad;
+  padding: 0;
+  background-color: #f2f2f2;
 }
 
 #login-container, #app-container {
-  max-width: 500px;
-  margin: auto;
+  max-width: 600px;
+  margin: 30px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1, h2, h3, h4 {
+  color: #004080;
+  text-align: center;
 }
 
 input, select, button {
@@ -20,40 +24,54 @@ input, select, button {
   width: 100%;
   margin: 10px 0;
   padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
   font-size: 16px;
 }
 
 button {
-  background-color: #004aad;
+  background-color: #004080;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
+  transition: background-color 0.3s;
 }
 
 button:hover {
-  background-color: #003380;
+  background-color: #0066cc;
 }
 
-.card {
-  background-color: white;
-  padding: 15px;
-  border-radius: 10px;
-  margin: 10px 0;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+nav {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+nav button {
+  flex: 1;
+  margin: 0 5px;
+  font-weight: bold;
 }
 
 .section {
   margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
 }
 
-.resumo {
-  background-color: #e0f2ff;
-  padding: 10px;
-  border-radius: 5px;
-  margin-top: 15px;
+label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
 }
 
-.error {
+#login-error {
   color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+
+p {
+  font-size: 16px;
+  margin: 5px 0;
 }
