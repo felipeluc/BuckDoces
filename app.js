@@ -1,23 +1,91 @@
-const users = {
-  felipe: "felipe1234",
-  joao: "joao1234",
-  iamillis: "iamillis1234"
+// ================= Firebase + App.js JF Bank =====================
+
+// Importações Firebase via CDN
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Configuração Firebase JF Bank
+const firebaseConfig = {
+  apiKey: "AIzaSyBFImw6Px0VKLiSVba8L-9PdjLPIU_HmSM",
+  authDomain: "financeiro-409db.firebaseapp.com",
+  projectId: "financeiro-409db",
+  storageBucket: "financeiro-409db.firebasestorage.app",
+  messagingSenderId: "124692561019",
+  appId: "1:124692561019:web:ceb10e49cf667d61f3b6de"
 };
 
-function login() {
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let currentUser = null;
+let userData = {};
+
+// ================= Login =====================
+
+async function login() {
   const user = document.getElementById("user-select").value;
   const password = document.getElementById("password").value;
   const error = document.getElementById("login-error");
 
-  if (user && password === `${user}1234`) {
+  const expectedPassword = `${user}1234`;
+  if (password === expectedPassword) {
+    currentUser = user;
+    const userRef = doc(db, "usuarios", currentUser);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        nome: currentUser,
+        salario: 0,
+        gastosFixos: [],
+        gastosVariaveis: [],
+        limiteCartao: 0,
+        cartaoFixos: [],
+        cartaoGastos: [],
+        cartaoOutros: [],
+        previsoes: {}
+      });
+      userData = {
+        salario: 0,
+        gastosFixos: [],
+        gastosVariaveis: [],
+        limiteCartao: 0,
+        cartaoFixos: [],
+        cartaoGastos: [],
+        cartaoOutros: [],
+        previsoes: {}
+      };
+    } else {
+      userData = snap.data();
+    }
+
     document.getElementById("login-container").style.display = "none";
     document.getElementById("app-container").style.display = "block";
     error.textContent = "";
+
+    carregarDados();
   } else {
     error.textContent = "Usuário ou senha incorretos.";
   }
 }
 
+// ============ Exibe dados salvos ao logar ==============
+function carregarDados() {
+  document.getElementById("salario").value = userData.salario;
+  document.getElementById("limite-cartao").value = userData.limiteCartao;
+  atualizarResumoDinheiro();
+  atualizarResumoCartao();
+}
+
+// ================== Seções ===================
 function showSection(id) {
   document.querySelectorAll('.section').forEach(section => {
     section.style.display = "none";
@@ -25,200 +93,114 @@ function showSection(id) {
   document.getElementById(id).style.display = "block";
 }
 
-// Funções extras para adicionar campos, calcular e atualizar valores virão na próxima parte
-const users = {
-  felipe: "felipe1234",
-  joao: "joao1234",
-  iamillis: "iamillis1234"
-};
-
-let salario = 0;
-let gastosFixos = [];
-let gastosVariaveis = [];
-
-let limiteCartao = 0;
-let cartaoFixos = [];
-let cartaoGastos = [];
-let cartaoOutros = [];
-
-let previsoes = {};
-
-function login() {
-  const user = document.getElementById("user-select").value;
-  const password = document.getElementById("password").value;
-  const error = document.getElementById("login-error");
-
-  if (user && password === `${user}1234`) {
-    document.getElementById("login-container").style.display = "none";
-    document.getElementById("app-container").style.display = "block";
-    error.textContent = "";
-  } else {
-    error.textContent = "Usuário ou senha incorretos.";
-  }
-}
-
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(section => {
-    section.style.display = "none";
-  });
-  document.getElementById(id).style.display = "block";
-}
-
-function salvarSalario() {
-  salario = parseFloat(document.getElementById("salario").value) || 0;
+// ================== Meu Dinheiro ===================
+async function salvarSalario() {
+  const valor = parseFloat(document.getElementById("salario").value) || 0;
+  userData.salario = valor;
+  await updateDoc(doc(db, "usuarios", currentUser), { salario: valor });
   atualizarResumoDinheiro();
 }
 
-function adicionarGastoFixo() {
-  const id = Date.now();
-  document.getElementById("gastos-fixos").insertAdjacentHTML('beforeend', `
-    <div class="card" id="gasto-fixo-${id}">
-      <input type="text" placeholder="Nome do gasto" id="fixo-nome-${id}" />
-      <input type="number" placeholder="Valor" id="fixo-valor-${id}" />
-      <button onclick="salvarGastoFixo(${id})">Salvar</button>
-    </div>
-  `);
-}
-
-function salvarGastoFixo(id) {
+async function salvarGastoFixo(id) {
   const nome = document.getElementById(`fixo-nome-${id}`).value;
   const valor = parseFloat(document.getElementById(`fixo-valor-${id}`).value) || 0;
-  gastosFixos.push({ nome, valor });
+  const novoGasto = { nome, valor };
+  userData.gastosFixos.push(novoGasto);
+  await updateDoc(doc(db, "usuarios", currentUser), {
+    gastosFixos: arrayUnion(novoGasto)
+  });
   atualizarResumoDinheiro();
 }
 
-function adicionarGastoVariavel() {
-  const id = Date.now();
-  document.getElementById("gastos-variaveis").insertAdjacentHTML('beforeend', `
-    <div class="card" id="gasto-var-${id}">
-      <input type="number" placeholder="Valor" id="var-valor-${id}" />
-      <select id="var-cat-${id}">
-        <option>Comida</option>
-        <option>Lazer</option>
-        <option>Transporte</option>
-        <option>Pagamento de Contas</option>
-      </select>
-      <button onclick="salvarGastoVariavel(${id})">Adicionar</button>
-    </div>
-  `);
-}
-
-function salvarGastoVariavel(id) {
+async function salvarGastoVariavel(id) {
   const valor = parseFloat(document.getElementById(`var-valor-${id}`).value) || 0;
   const categoria = document.getElementById(`var-cat-${id}`).value;
-  gastosVariaveis.push({ valor, categoria });
+  const gasto = { valor, categoria };
+  userData.gastosVariaveis.push(gasto);
+  await updateDoc(doc(db, "usuarios", currentUser), {
+    gastosVariaveis: arrayUnion(gasto)
+  });
   atualizarResumoDinheiro();
 }
 
 function atualizarResumoDinheiro() {
-  const totalFixos = gastosFixos.reduce((acc, g) => acc + g.valor, 0);
-  const totalVariavel = gastosVariaveis.reduce((acc, g) => acc + g.valor, 0);
-  const total = totalFixos + totalVariavel;
+  const totalFixos = userData.gastosFixos.reduce((acc, g) => acc + g.valor, 0);
+  const totalVars = userData.gastosVariaveis.reduce((acc, g) => acc + g.valor, 0);
+  const total = totalFixos + totalVars;
+  const saldo = userData.salario - total;
   document.getElementById("gasto-total").textContent = total.toFixed(2);
-  document.getElementById("saldo-restante").textContent = (salario - total).toFixed(2);
+  document.getElementById("saldo-restante").textContent = saldo.toFixed(2);
 }
 
-// ================= MEU CARTÃO ===================
-
-function salvarLimiteCartao() {
-  limiteCartao = parseFloat(document.getElementById("limite-cartao").value) || 0;
+// ================== Meu Cartão ===================
+async function salvarLimiteCartao() {
+  const limite = parseFloat(document.getElementById("limite-cartao").value) || 0;
+  userData.limiteCartao = limite;
+  await updateDoc(doc(db, "usuarios", currentUser), { limiteCartao: limite });
   atualizarResumoCartao();
 }
 
-function adicionarCartaoFixo() {
-  const id = Date.now();
-  document.getElementById("cartao-fixos").insertAdjacentHTML('beforeend', `
-    <div class="card" id="cartao-fixo-${id}">
-      <input type="text" placeholder="Descrição" id="cf-nome-${id}" />
-      <input type="number" placeholder="Valor" id="cf-valor-${id}" />
-      <button onclick="salvarCartaoFixo(${id})">Salvar</button>
-    </div>
-  `);
-}
-
-function salvarCartaoFixo(id) {
-  const nome = document.getElementById(`cf-nome-${id}`).value;
-  const valor = parseFloat(document.getElementById(`cf-valor-${id}`).value) || 0;
-  cartaoFixos.push({ nome, valor });
+async function salvarCartaoFixo(id) {
+  const nome = document.getElementById(`cartao-fixo-nome-${id}`).value;
+  const valor = parseFloat(document.getElementById(`cartao-fixo-valor-${id}`).value) || 0;
+  const novo = { nome, valor };
+  userData.cartaoFixos.push(novo);
+  await updateDoc(doc(db, "usuarios", currentUser), {
+    cartaoFixos: arrayUnion(novo)
+  });
   atualizarResumoCartao();
 }
 
-function adicionarCartaoGasto() {
-  const id = Date.now();
-  document.getElementById("cartao-gastos").insertAdjacentHTML('beforeend', `
-    <div class="card" id="cartao-gasto-${id}">
-      <input type="number" placeholder="Valor" id="cg-valor-${id}" />
-      <select id="cg-cat-${id}">
-        <option>Comida</option>
-        <option>Lazer</option>
-        <option>Transporte</option>
-        <option>Pagamento de Contas</option>
-      </select>
-      <button onclick="salvarCartaoGasto(${id})">Adicionar</button>
-    </div>
-  `);
-}
-
-function salvarCartaoGasto(id) {
-  const valor = parseFloat(document.getElementById(`cg-valor-${id}`).value) || 0;
-  const categoria = document.getElementById(`cg-cat-${id}`).value;
-  cartaoGastos.push({ valor, categoria });
+async function salvarCartaoGasto(id) {
+  const valor = parseFloat(document.getElementById(`cartao-gasto-valor-${id}`).value) || 0;
+  const categoria = document.getElementById(`cartao-gasto-cat-${id}`).value;
+  const novo = { valor, categoria };
+  userData.cartaoGastos.push(novo);
+  await updateDoc(doc(db, "usuarios", currentUser), {
+    cartaoGastos: arrayUnion(novo)
+  });
   atualizarResumoCartao();
 }
 
-function adicionarCartaoOutro() {
-  const id = Date.now();
-  document.getElementById("cartao-outras-pessoas").insertAdjacentHTML('beforeend', `
-    <div class="card" id="cartao-outro-${id}">
-      <input type="text" placeholder="Quem usou" id="co-nome-${id}" />
-      <input type="number" placeholder="Valor" id="co-valor-${id}" />
-      <button onclick="salvarCartaoOutro(${id})">Salvar</button>
-    </div>
-  `);
-}
-
-function salvarCartaoOutro(id) {
-  const nome = document.getElementById(`co-nome-${id}`).value;
-  const valor = parseFloat(document.getElementById(`co-valor-${id}`).value) || 0;
-  cartaoOutros.push({ nome, valor });
+async function salvarCartaoOutro(id) {
+  const nome = document.getElementById(`cartao-outro-nome-${id}`).value;
+  const valor = parseFloat(document.getElementById(`cartao-outro-valor-${id}`).value) || 0;
+  const novo = { nome, valor };
+  userData.cartaoOutros.push(novo);
+  await updateDoc(doc(db, "usuarios", currentUser), {
+    cartaoOutros: arrayUnion(novo)
+  });
   atualizarResumoCartao();
 }
 
 function atualizarResumoCartao() {
-  const totalFixos = cartaoFixos.reduce((acc, g) => acc + g.valor, 0);
-  const totalGastos = cartaoGastos.reduce((acc, g) => acc + g.valor, 0);
-  const totalOutros = cartaoOutros.reduce((acc, g) => acc + g.valor, 0);
-
-  const totalPessoal = totalFixos + totalGastos;
-  const totalFinal = totalPessoal + totalOutros;
-  const restante = limiteCartao - totalPessoal;
-
-  document.getElementById("total-cartao").textContent = totalPessoal.toFixed(2);
-  document.getElementById("gasto-outras-pessoas").textContent = totalOutros.toFixed(2);
-  document.getElementById("saldo-cartao").textContent = restante.toFixed(2);
+  const totalFixos = userData.cartaoFixos.reduce((acc, g) => acc + g.valor, 0);
+  const totalGastos = userData.cartaoGastos.reduce((acc, g) => acc + g.valor, 0);
+  const totalOutros = userData.cartaoOutros.reduce((acc, g) => acc + g.valor, 0);
+  const gastoConsiderado = totalFixos + totalGastos;
+  const saldo = userData.limiteCartao - gastoConsiderado;
+  document.getElementById("cartao-gasto-total").textContent = gastoConsiderado.toFixed(2);
+  document.getElementById("cartao-outros-total").textContent = totalOutros.toFixed(2);
+  document.getElementById("cartao-saldo-restante").textContent = saldo.toFixed(2);
 }
 
-// ============ PREVISÃO ==============
-
-function adicionarPrevisao() {
-  const mes = document.getElementById("mes-previsao").value;
-  if (!mes) return alert("Selecione um mês!");
-
-  const id = Date.now();
-  if (!previsoes[mes]) previsoes[mes] = [];
-
-  document.getElementById("previsao-gastos").insertAdjacentHTML('beforeend', `
-    <div class="card" id="prev-${id}">
-      <input type="text" placeholder="Descrição" id="prev-desc-${id}" />
-      <input type="number" placeholder="Valor" id="prev-valor-${id}" />
-      <button onclick="salvarPrevisao('${mes}', ${id})">Salvar</button>
-    </div>
-  `);
+// ================== Previsão ===================
+async function salvarPrevisao() {
+  const mes = document.getElementById("previsao-mes").value; // formato yyyy-mm
+  const nome = document.getElementById("previsao-nome").value;
+  const valor = parseFloat(document.getElementById("previsao-valor").value) || 0;
+  if (!userData.previsoes[mes]) {
+    userData.previsoes[mes] = [];
+  }
+  userData.previsoes[mes].push({ nome, valor });
+  await updateDoc(doc(db, "usuarios", currentUser), {
+    [`previsoes.${mes}`]: arrayUnion({ nome, valor })
+  });
+  atualizarPrevisao(mes);
 }
 
-function salvarPrevisao(mes, id) {
-  const descricao = document.getElementById(`prev-desc-${id}`).value;
-  const valor = parseFloat(document.getElementById(`prev-valor-${id}`).value) || 0;
-  previsoes[mes].push({ descricao, valor });
-  alert("Previsão salva!");
+function atualizarPrevisao(mes) {
+  const lista = userData.previsoes[mes] || [];
+  const total = lista.reduce((acc, g) => acc + g.valor, 0);
+  document.getElementById("previsao-total").textContent = total.toFixed(2);
 }
