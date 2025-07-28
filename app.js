@@ -1,188 +1,224 @@
-
-// === CONFIGURAÇÃO FIREBASE ===
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  updateDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDGg5JtE_7gVRhTlRY30bpXsmMpvPEQ3tw",
-  authDomain: "buckdoces.firebaseapp.com",
-  projectId: "buckdoces",
-  storageBucket: "buckdoces.appspot.com",
-  messagingSenderId: "781727917443",
-  appId: "1:781727917443:web:c9709b3813d28ea60982b6"
+const users = {
+  felipe: "felipe1234",
+  joao: "joao1234",
+  iamillis: "iamillis1234"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+function login() {
+  const user = document.getElementById("user-select").value;
+  const password = document.getElementById("password").value;
+  const error = document.getElementById("login-error");
 
-// === INTERFACE LOGIN ===
-document.getElementById("root").innerHTML = `
-  <h1 style="text-align: center; color: #d48c94">Buck Doces</h1>
-  <div class="card login-card">
-    <select id="user">
-      <option>Ana Buck</option>
-      <option>João Buck</option>
-    </select>
-    <input type="password" id="senha" placeholder="Senha" />
-    <button onclick="login()">Entrar</button>
-  </div>
-  <div id="main"></div>
-`;
-
-// === USUÁRIOS E SENHAS ===
-const senhas = {
-  "Ana Buck": "Ana1234",
-  "João Buck": "João1234"
-};
-
-// === LOGIN ===
-window.login = () => {
-  const usuario = document.getElementById("user").value;
-  const senha = document.getElementById("senha").value;
-  if (senhas[usuario] === senha) {
-    showTabs(usuario);
+  if (user && password === `${user}1234`) {
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("app-container").style.display = "block";
+    error.textContent = "";
   } else {
-    alert("Senha incorreta");
+    error.textContent = "Usuário ou senha incorretos.";
   }
-};
-
-// === MENU PRINCIPAL ===
-function showTabs(user) {
-  document.getElementById("main").innerHTML = `
-    <div class="card">
-      <button onclick="showCadastro('${user}')">Cadastrar Venda</button>
-      <button onclick="showDashboard()">Dashboard</button>
-      <button onclick="showCobranca()">Cobrança</button>
-    </div>
-    <div id="conteudo" class="card"></div>
-  `;
 }
 
-// === DASHBOARD (ATUALIZADO COM CALENDÁRIO DE VENDAS) ===
-window.showDashboard = async () => {
-  const snap = await getDocs(collection(db, "vendas"));
-  const vendas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  const hoje = new Date().toISOString().split("T")[0];
-
-  const hojeVendas = vendas.filter(v => v.data === hoje);
-  const totalHoje = hojeVendas.reduce((acc, v) => acc + (parseFloat(v.valor) || 0), 0);
-
-  const aReceber = vendas
-    .filter(v => v.status !== "pago")
-    .reduce((acc, v) => acc + ((parseFloat(v.faltaReceber) > 0) ? parseFloat(v.faltaReceber) : 0), 0);
-
-  document.getElementById("conteudo").innerHTML = `
-    <h2>Dashboard</h2>
-    <p>Vendas hoje: ${hojeVendas.length}</p>
-    <p>Total vendido hoje: R$ ${totalHoje.toFixed(2)}</p>
-    <p>Valor a receber: R$ ${aReceber.toFixed(2)}</p>
-    <hr>
-    <h3>Vendas por dia</h3>
-    <input type="month" id="mesDashboard" />
-    <div id="calendarioDashboard"></div>
-    <div id="vendasDia"></div>
-  `;
-
-  document.getElementById("mesDashboard").addEventListener("change", e => {
-    const mes = e.target.value;
-    if (!mes) return;
-
-    const dias = {};
-    vendas.forEach(v => {
-      if (v.data?.startsWith(mes)) {
-        const dia = v.data.split("-")[2];
-        if (!dias[dia]) dias[dia] = [];
-        dias[dia].push(v);
-      }
-    });
-
-    const calendario = Array.from({ length: 31 }, (_, i) => {
-      const diaStr = String(i + 1).padStart(2, "0");
-      const vendasDoDia = dias[diaStr] || [];
-
-      const totalDia = vendasDoDia.reduce((acc, v) => acc + parseFloat(v.valor || 0), 0);
-      const valorHtml = totalDia > 0 ? `<div class="calendar-day-value">R$ ${totalDia.toFixed(2)}</div>` : "";
-
-      return `
-        <div class="calendar-day" onclick="mostrarVendasDia('${mes}-${diaStr}')">
-          <div>${diaStr}</div>
-          ${valorHtml}
-        </div>`;
-    }).join("");
-
-    document.getElementById("calendarioDashboard").innerHTML = `<div class="calendar">${calendario}</div>`;
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(section => {
+    section.style.display = "none";
   });
+  document.getElementById(id).style.display = "block";
+}
+
+// Funções extras para adicionar campos, calcular e atualizar valores virão na próxima parte
+const users = {
+  felipe: "felipe1234",
+  joao: "joao1234",
+  iamillis: "iamillis1234"
 };
 
-// === MOSTRAR VENDAS DE UM DIA ===
-window.mostrarVendasDia = async (dataCompleta) => {
-  const snap = await getDocs(collection(db, "vendas"));
-  const vendas = snap.docs
-    .map(doc => ({ id: doc.id, ...doc.data() }))
-    .filter(v => v.data === dataCompleta);
+let salario = 0;
+let gastosFixos = [];
+let gastosVariaveis = [];
 
-  if (vendas.length === 0) {
-    document.getElementById("vendasDia").innerHTML = "<p>Nenhuma venda neste dia.</p>";
-    return;
+let limiteCartao = 0;
+let cartaoFixos = [];
+let cartaoGastos = [];
+let cartaoOutros = [];
+
+let previsoes = {};
+
+function login() {
+  const user = document.getElementById("user-select").value;
+  const password = document.getElementById("password").value;
+  const error = document.getElementById("login-error");
+
+  if (user && password === `${user}1234`) {
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("app-container").style.display = "block";
+    error.textContent = "";
+  } else {
+    error.textContent = "Usuário ou senha incorretos.";
   }
+}
 
-  const cards = vendas.map(v => {
-    const produtos = (v.produtosVendidos || []).map(p => `<div>${p}</div>`).join("");
-    return `
-      <div class="card">
-        <h3>${v.cliente} - ${v.telefone}</h3>
-        <p><strong>Local:</strong> ${v.local}</p>
-        <p><strong>Valor:</strong> R$ ${parseFloat(v.valor).toFixed(2)}</p>
-        <p><strong>Status:</strong> ${v.status}</p>
-        <p><strong>Forma de pagamento:</strong> ${v.forma || '-'}</p>
-        <p><strong>Produtos:</strong><br>${produtos}</p>
-        <button onclick="reenviarComprovante('${v.telefone}', '${v.id}')">Reenviar Comprovante</button>
-      </div>
-    `;
-  }).join("");
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(section => {
+    section.style.display = "none";
+  });
+  document.getElementById(id).style.display = "block";
+}
 
-  document.getElementById("vendasDia").innerHTML = `<h3>${formatarData(dataCompleta)}</h3>${cards}`;
-};
+function salvarSalario() {
+  salario = parseFloat(document.getElementById("salario").value) || 0;
+  atualizarResumoDinheiro();
+}
 
-// === REENVIAR COMPROVANTE ===
-window.reenviarComprovante = async (telefone, vendaId) => {
-  const snap = await getDocs(collection(db, "vendas"));
-  const doc = snap.docs.find(d => d.id === vendaId);
-  if (!doc) return alert("Venda não encontrada.");
+function adicionarGastoFixo() {
+  const id = Date.now();
+  document.getElementById("gastos-fixos").insertAdjacentHTML('beforeend', `
+    <div class="card" id="gasto-fixo-${id}">
+      <input type="text" placeholder="Nome do gasto" id="fixo-nome-${id}" />
+      <input type="number" placeholder="Valor" id="fixo-valor-${id}" />
+      <button onclick="salvarGastoFixo(${id})">Salvar</button>
+    </div>
+  `);
+}
 
-  const v = doc.data();
-  const produtos = (v.produtosVendidos || []).map(p => `- ${p}`).join("\n");
+function salvarGastoFixo(id) {
+  const nome = document.getElementById(`fixo-nome-${id}`).value;
+  const valor = parseFloat(document.getElementById(`fixo-valor-${id}`).value) || 0;
+  gastosFixos.push({ nome, valor });
+  atualizarResumoDinheiro();
+}
 
-  const msg = `Olá ${v.cliente}!
+function adicionarGastoVariavel() {
+  const id = Date.now();
+  document.getElementById("gastos-variaveis").insertAdjacentHTML('beforeend', `
+    <div class="card" id="gasto-var-${id}">
+      <input type="number" placeholder="Valor" id="var-valor-${id}" />
+      <select id="var-cat-${id}">
+        <option>Comida</option>
+        <option>Lazer</option>
+        <option>Transporte</option>
+        <option>Pagamento de Contas</option>
+      </select>
+      <button onclick="salvarGastoVariavel(${id})">Adicionar</button>
+    </div>
+  `);
+}
 
-Segue o comprovante da sua compra na Ana Buck Doces:
+function salvarGastoVariavel(id) {
+  const valor = parseFloat(document.getElementById(`var-valor-${id}`).value) || 0;
+  const categoria = document.getElementById(`var-cat-${id}`).value;
+  gastosVariaveis.push({ valor, categoria });
+  atualizarResumoDinheiro();
+}
 
-Produtos:
-${produtos}
+function atualizarResumoDinheiro() {
+  const totalFixos = gastosFixos.reduce((acc, g) => acc + g.valor, 0);
+  const totalVariavel = gastosVariaveis.reduce((acc, g) => acc + g.valor, 0);
+  const total = totalFixos + totalVariavel;
+  document.getElementById("gasto-total").textContent = total.toFixed(2);
+  document.getElementById("saldo-restante").textContent = (salario - total).toFixed(2);
+}
 
-Valor: R$ ${parseFloat(v.valor).toFixed(2)}
-Status: ${v.status.toUpperCase()}${v.status !== "pago" ? `
-Pagamento para: ${formatarData(v.dataReceber)}` : ""}
+// ================= MEU CARTÃO ===================
 
-💳 CHAVE PIX (CNPJ): 57.010.512/0001-56
-📩 Por favor, envie o comprovante após o pagamento.
+function salvarLimiteCartao() {
+  limiteCartao = parseFloat(document.getElementById("limite-cartao").value) || 0;
+  atualizarResumoCartao();
+}
 
-Obrigada pela preferência!`;
+function adicionarCartaoFixo() {
+  const id = Date.now();
+  document.getElementById("cartao-fixos").insertAdjacentHTML('beforeend', `
+    <div class="card" id="cartao-fixo-${id}">
+      <input type="text" placeholder="Descrição" id="cf-nome-${id}" />
+      <input type="number" placeholder="Valor" id="cf-valor-${id}" />
+      <button onclick="salvarCartaoFixo(${id})">Salvar</button>
+    </div>
+  `);
+}
 
-  const link = `https://wa.me/${telefone}?text=${encodeURIComponent(msg)}`;
-  window.open(link, "_blank");
-};
+function salvarCartaoFixo(id) {
+  const nome = document.getElementById(`cf-nome-${id}`).value;
+  const valor = parseFloat(document.getElementById(`cf-valor-${id}`).value) || 0;
+  cartaoFixos.push({ nome, valor });
+  atualizarResumoCartao();
+}
 
-// === FORMATAR DATA ===
-function formatarData(data) {
-  if (!data) return "-";
-  const [ano, mes, dia] = data.split("-");
-  return `${dia}-${mes}-${ano}`;
+function adicionarCartaoGasto() {
+  const id = Date.now();
+  document.getElementById("cartao-gastos").insertAdjacentHTML('beforeend', `
+    <div class="card" id="cartao-gasto-${id}">
+      <input type="number" placeholder="Valor" id="cg-valor-${id}" />
+      <select id="cg-cat-${id}">
+        <option>Comida</option>
+        <option>Lazer</option>
+        <option>Transporte</option>
+        <option>Pagamento de Contas</option>
+      </select>
+      <button onclick="salvarCartaoGasto(${id})">Adicionar</button>
+    </div>
+  `);
+}
+
+function salvarCartaoGasto(id) {
+  const valor = parseFloat(document.getElementById(`cg-valor-${id}`).value) || 0;
+  const categoria = document.getElementById(`cg-cat-${id}`).value;
+  cartaoGastos.push({ valor, categoria });
+  atualizarResumoCartao();
+}
+
+function adicionarCartaoOutro() {
+  const id = Date.now();
+  document.getElementById("cartao-outras-pessoas").insertAdjacentHTML('beforeend', `
+    <div class="card" id="cartao-outro-${id}">
+      <input type="text" placeholder="Quem usou" id="co-nome-${id}" />
+      <input type="number" placeholder="Valor" id="co-valor-${id}" />
+      <button onclick="salvarCartaoOutro(${id})">Salvar</button>
+    </div>
+  `);
+}
+
+function salvarCartaoOutro(id) {
+  const nome = document.getElementById(`co-nome-${id}`).value;
+  const valor = parseFloat(document.getElementById(`co-valor-${id}`).value) || 0;
+  cartaoOutros.push({ nome, valor });
+  atualizarResumoCartao();
+}
+
+function atualizarResumoCartao() {
+  const totalFixos = cartaoFixos.reduce((acc, g) => acc + g.valor, 0);
+  const totalGastos = cartaoGastos.reduce((acc, g) => acc + g.valor, 0);
+  const totalOutros = cartaoOutros.reduce((acc, g) => acc + g.valor, 0);
+
+  const totalPessoal = totalFixos + totalGastos;
+  const totalFinal = totalPessoal + totalOutros;
+  const restante = limiteCartao - totalPessoal;
+
+  document.getElementById("total-cartao").textContent = totalPessoal.toFixed(2);
+  document.getElementById("gasto-outras-pessoas").textContent = totalOutros.toFixed(2);
+  document.getElementById("saldo-cartao").textContent = restante.toFixed(2);
+}
+
+// ============ PREVISÃO ==============
+
+function adicionarPrevisao() {
+  const mes = document.getElementById("mes-previsao").value;
+  if (!mes) return alert("Selecione um mês!");
+
+  const id = Date.now();
+  if (!previsoes[mes]) previsoes[mes] = [];
+
+  document.getElementById("previsao-gastos").insertAdjacentHTML('beforeend', `
+    <div class="card" id="prev-${id}">
+      <input type="text" placeholder="Descrição" id="prev-desc-${id}" />
+      <input type="number" placeholder="Valor" id="prev-valor-${id}" />
+      <button onclick="salvarPrevisao('${mes}', ${id})">Salvar</button>
+    </div>
+  `);
+}
+
+function salvarPrevisao(mes, id) {
+  const descricao = document.getElementById(`prev-desc-${id}`).value;
+  const valor = parseFloat(document.getElementById(`prev-valor-${id}`).value) || 0;
+  previsoes[mes].push({ descricao, valor });
+  alert("Previsão salva!");
 }
