@@ -1,91 +1,99 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zulu Bank</title>
+  <title>JF Bank</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="login-container">
-    <h1>Zulu Bank</h1>
+    <h1>JF Bank</h1>
     <select id="user-select">
-      <option value="">Selecione o usuário</option>
-      <option value="felipe">Felipe</option>
-      <option value="joao">João</option>
-      <option value="iamillis">Iamillis</option>
+      <option value="Felipe">Felipe</option>
+      <option value="João">João</option>
+      <option value="Iamillis">Iamillis</option>
     </select>
     <input type="password" id="password" placeholder="Senha" />
     <button onclick="login()">Entrar</button>
-    <p id="login-error" class="error"></p>
+    <p id="login-error"></p>
   </div>
 
-  <div id="app-container" style="display:none;">
-    <div id="menu">
+  <div id="app-container" style="display: none">
+    <h2>Bem-vindo ao JF Bank</h2>
+    <nav>
       <button onclick="showSection('meu-dinheiro')">Meu Dinheiro</button>
       <button onclick="showSection('meu-cartao')">Meu Cartão</button>
       <button onclick="showSection('previsao')">Previsão</button>
-    </div>
+    </nav>
 
-    <div id="meu-dinheiro" class="section">
-      <h2>💰 Meu Dinheiro</h2>
-      <div class="card">
-        <label>Salário ou dinheiro do mês</label>
-        <input type="number" id="salario" placeholder="Ex: 3000" />
-        <button onclick="salvarSalario()">Salvar</button>
+    <section id="meu-dinheiro" class="section">
+      <h3>Meu Dinheiro</h3>
+      <label>Salário: R$ <input type="number" id="salario" /></label>
+      <button onclick="salvarSalario()">Salvar Salário</button>
+      <h4>Gastos Fixos</h4>
+      <div id="gastos-fixos">
+        <input placeholder="Nome" id="fixo-nome-1" />
+        <input placeholder="Valor" type="number" id="fixo-valor-1" />
+        <button onclick="salvarGastoFixo(1)">Salvar</button>
       </div>
-
-      <h3>Gastos Fixos</h3>
-      <div id="gastos-fixos"></div>
-      <button onclick="adicionarGastoFixo()">+ Adicionar Gasto Fixo</button>
-
-      <h3>Outros Gastos</h3>
-      <div id="gastos-variaveis"></div>
-      <button onclick="adicionarGastoVariavel()">+ Adicionar Gasto</button>
-
-      <div class="resumo">
-        <p>Gasto Total: R$ <span id="gasto-total">0</span></p>
-        <p>Saldo Restante: R$ <span id="saldo-restante">0</span></p>
+      <h4>Gastos Variáveis</h4>
+      <div id="gastos-variaveis">
+        <input placeholder="Valor" type="number" id="var-valor-1" />
+        <select id="var-cat-1">
+          <option>Comida</option>
+          <option>Lazer</option>
+          <option>Transporte</option>
+          <option>Contas</option>
+        </select>
+        <button onclick="salvarGastoVariavel(1)">Adicionar</button>
       </div>
-    </div>
-
-    <div id="meu-cartao" class="section" style="display:none;">
-      <h2>💳 Meu Cartão</h2>
-      <div class="card">
-        <label>Limite Disponível</label>
-        <input type="number" id="limite-cartao" />
-        <button onclick="salvarLimiteCartao()">Salvar</button>
+      <div>
+        <p>Total Gasto: R$ <span id="gasto-total">0.00</span></p>
+        <p>Saldo Restante: R$ <span id="saldo-restante">0.00</span></p>
       </div>
+    </section>
 
-      <h3>Gastos Fixos do Cartão</h3>
-      <div id="cartao-fixos"></div>
-      <button onclick="adicionarCartaoFixo()">+ Adicionar</button>
-
-      <h3>Gastos no Cartão</h3>
-      <div id="cartao-gastos"></div>
-      <button onclick="adicionarCartaoGasto()">+ Adicionar</button>
-
-      <h3>Gastos de Outras Pessoas</h3>
-      <div id="cartao-outras-pessoas"></div>
-      <button onclick="adicionarCartaoOutro()">+ Adicionar</button>
-
-      <div class="resumo">
-        <p>Total Gasto: R$ <span id="total-cartao">0</span></p>
-        <p>De Outras Pessoas: R$ <span id="gasto-outras-pessoas">0</span></p>
-        <p>Saldo Restante: R$ <span id="saldo-cartao">0</span></p>
+    <section id="meu-cartao" class="section" style="display: none">
+      <h3>Meu Cartão</h3>
+      <label>Limite: R$ <input type="number" id="limite-cartao" /></label>
+      <button onclick="salvarLimiteCartao()">Salvar Limite</button>
+      <h4>Gastos Fixos no Cartão</h4>
+      <input placeholder="Nome" id="cartao-fixo-nome-1" />
+      <input placeholder="Valor" type="number" id="cartao-fixo-valor-1" />
+      <button onclick="salvarCartaoFixo(1)">Salvar</button>
+      <h4>Gastos no Cartão</h4>
+      <input placeholder="Valor" type="number" id="cartao-gasto-valor-1" />
+      <select id="cartao-gasto-cat-1">
+        <option>Comida</option>
+        <option>Lazer</option>
+        <option>Transporte</option>
+        <option>Contas</option>
+      </select>
+      <button onclick="salvarCartaoGasto(1)">Adicionar</button>
+      <h4>Gastos de Outras Pessoas</h4>
+      <input placeholder="Nome" id="cartao-outro-nome-1" />
+      <input placeholder="Valor" type="number" id="cartao-outro-valor-1" />
+      <button onclick="salvarCartaoOutro(1)">Salvar</button>
+      <div>
+        <p>Total Gasto: R$ <span id="cartao-gasto-total">0.00</span></p>
+        <p>Gasto de Outros: R$ <span id="cartao-outros-total">0.00</span></p>
+        <p>Saldo Restante: R$ <span id="cartao-saldo-restante">0.00</span></p>
       </div>
-    </div>
+    </section>
 
-    <div id="previsao" class="section" style="display:none;">
-      <h2>📅 Previsão</h2>
-      <label for="mes">Selecionar mês:</label>
-      <input type="month" id="mes-previsao" />
-      <h3>Gastos Previstos</h3>
-      <div id="previsao-gastos"></div>
-      <button onclick="adicionarPrevisao()">+ Adicionar Previsão</button>
-    </div>
+    <section id="previsao" class="section" style="display: none">
+      <h3>Previsão de Gastos</h3>
+      <input type="month" id="previsao-mes" />
+      <input placeholder="Nome do Gasto" id="previsao-nome" />
+      <input placeholder="Valor" type="number" id="previsao-valor" />
+      <button onclick="salvarPrevisao()">Salvar Previsão</button>
+      <div>
+        <p>Total Previsto: R$ <span id="previsao-total">0.00</span></p>
+      </div>
+    </section>
   </div>
 
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
