@@ -1,26 +1,18 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #fff0f3;
+  font-family: 'Segoe UI', sans-serif;
   margin: 0;
-  padding: 0;
+  background-color: #f4f6f8;
+  color: #333;
+  padding: 20px;
 }
 
 h1 {
-  margin-top: 20px;
+  color: #004aad;
 }
 
-.card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin: 20px auto;
-  padding: 20px;
+#login-container, #app-container {
   max-width: 500px;
-  width: 90%;
-}
-
-.login-card {
-  text-align: center;
+  margin: auto;
 }
 
 input, select, button {
@@ -29,78 +21,39 @@ input, select, button {
   margin: 10px 0;
   padding: 10px;
   font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #e0a6b1;
 }
 
 button {
-  background-color: #e48a98;
+  background-color: #004aad;
   color: white;
   border: none;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
+  border-radius: 5px;
 }
 
 button:hover {
-  background-color: #d47b89;
+  background-color: #003380;
 }
 
-.calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+.card {
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 10px 0;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.section {
   margin-top: 20px;
 }
 
-.calendar-day {
-  background: #ffe5ec;
+.resumo {
+  background-color: #e0f2ff;
   padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s;
+  border-radius: 5px;
+  margin-top: 15px;
 }
 
-.calendar-day:hover {
-  transform: scale(1.05);
-  background-color: #fcd1db;
-}
-
-.calendar-day-value {
-  margin-top: 5px;
-  font-weight: bold;
-  color: #b83250;
-}
-
-.compra-info {
-  background: #fff5f7;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  border-left: 4px solid #f48b94;
-}
-
-hr {
-  border: none;
-  border-top: 1px solid #f1cdd2;
-  margin: 10px 0;
-}
-
-h2, h3 {
-  color: #c06078;
-}
-
-p {
-  margin: 4px 0;
-}
-
-strong {
-  color: #a5405d;
-}
-
-@media screen and (max-width: 600px) {
-  .calendar {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.error {
+  color: red;
 }
