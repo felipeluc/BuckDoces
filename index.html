@@ -1,19 +1,91 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Buck Doces</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zulu Bank</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="root"></div>
+  <div id="login-container">
+    <h1>Zulu Bank</h1>
+    <select id="user-select">
+      <option value="">Selecione o usuário</option>
+      <option value="felipe">Felipe</option>
+      <option value="joao">João</option>
+      <option value="iamillis">Iamillis</option>
+    </select>
+    <input type="password" id="password" placeholder="Senha" />
+    <button onclick="login()">Entrar</button>
+    <p id="login-error" class="error"></p>
+  </div>
 
-  <!-- Firebase SDK -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <div id="app-container" style="display:none;">
+    <div id="menu">
+      <button onclick="showSection('meu-dinheiro')">Meu Dinheiro</button>
+      <button onclick="showSection('meu-cartao')">Meu Cartão</button>
+      <button onclick="showSection('previsao')">Previsão</button>
+    </div>
 
-  <!-- App principal -->
-  <script type="module" src="app.js"></script>
+    <div id="meu-dinheiro" class="section">
+      <h2>💰 Meu Dinheiro</h2>
+      <div class="card">
+        <label>Salário ou dinheiro do mês</label>
+        <input type="number" id="salario" placeholder="Ex: 3000" />
+        <button onclick="salvarSalario()">Salvar</button>
+      </div>
+
+      <h3>Gastos Fixos</h3>
+      <div id="gastos-fixos"></div>
+      <button onclick="adicionarGastoFixo()">+ Adicionar Gasto Fixo</button>
+
+      <h3>Outros Gastos</h3>
+      <div id="gastos-variaveis"></div>
+      <button onclick="adicionarGastoVariavel()">+ Adicionar Gasto</button>
+
+      <div class="resumo">
+        <p>Gasto Total: R$ <span id="gasto-total">0</span></p>
+        <p>Saldo Restante: R$ <span id="saldo-restante">0</span></p>
+      </div>
+    </div>
+
+    <div id="meu-cartao" class="section" style="display:none;">
+      <h2>💳 Meu Cartão</h2>
+      <div class="card">
+        <label>Limite Disponível</label>
+        <input type="number" id="limite-cartao" />
+        <button onclick="salvarLimiteCartao()">Salvar</button>
+      </div>
+
+      <h3>Gastos Fixos do Cartão</h3>
+      <div id="cartao-fixos"></div>
+      <button onclick="adicionarCartaoFixo()">+ Adicionar</button>
+
+      <h3>Gastos no Cartão</h3>
+      <div id="cartao-gastos"></div>
+      <button onclick="adicionarCartaoGasto()">+ Adicionar</button>
+
+      <h3>Gastos de Outras Pessoas</h3>
+      <div id="cartao-outras-pessoas"></div>
+      <button onclick="adicionarCartaoOutro()">+ Adicionar</button>
+
+      <div class="resumo">
+        <p>Total Gasto: R$ <span id="total-cartao">0</span></p>
+        <p>De Outras Pessoas: R$ <span id="gasto-outras-pessoas">0</span></p>
+        <p>Saldo Restante: R$ <span id="saldo-cartao">0</span></p>
+      </div>
+    </div>
+
+    <div id="previsao" class="section" style="display:none;">
+      <h2>📅 Previsão</h2>
+      <label for="mes">Selecionar mês:</label>
+      <input type="month" id="mes-previsao" />
+      <h3>Gastos Previstos</h3>
+      <div id="previsao-gastos"></div>
+      <button onclick="adicionarPrevisao()">+ Adicionar Previsão</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
