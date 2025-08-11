@@ -17,26 +17,19 @@ body {
   padding: 20px;
 }
 
-/* Layout principal */
-.app {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Card padrão */
+/* Cards */
 .card {
   background: white;
   border-radius: 14px;
   padding: 18px;
-  box-shadow: 0 6px 20px rgba(90, 43, 56, 0.08);
-  margin-bottom: 18px;
+  box-shadow: 0 6px 20px rgba(165, 64, 93, 0.08);
+  margin: 20px auto;
+  max-width: 500px;
+  width: 90%;
 }
 
-/* Card de login centralizado */
 .login-card {
   text-align: center;
-  max-width: 500px;
-  margin: 40px auto;
 }
 
 /* Títulos */
@@ -45,6 +38,7 @@ h1 {
   font-weight: 600;
   margin-bottom: 10px;
   color: #a5405d;
+  text-align: center;
 }
 
 h2, h3 {
@@ -54,6 +48,7 @@ h2, h3 {
 
 /* Inputs e selects */
 input, select {
+  display: block;
   width: 100%;
   padding: 10px 12px;
   border-radius: 10px;
