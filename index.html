@@ -1,99 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <title>Buck Doces</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JF Bank</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="login-container">
-    <h1>JF Bank</h1>
-    <select id="user-select">
-      <option value="Felipe">Felipe</option>
-      <option value="João">João</option>
-      <option value="Iamillis">Iamillis</option>
-    </select>
-    <input type="password" id="password" placeholder="Senha" />
-    <button onclick="login()">Entrar</button>
-    <p id="login-error"></p>
-  </div>
-
-  <div id="app-container" style="display: none">
-    <h2>Bem-vindo ao JF Bank</h2>
-    <nav>
-      <button onclick="showSection('meu-dinheiro')">Meu Dinheiro</button>
-      <button onclick="showSection('meu-cartao')">Meu Cartão</button>
-      <button onclick="showSection('previsao')">Previsão</button>
-    </nav>
-
-    <section id="meu-dinheiro" class="section">
-      <h3>Meu Dinheiro</h3>
-      <label>Salário: R$ <input type="number" id="salario" /></label>
-      <button onclick="salvarSalario()">Salvar Salário</button>
-      <h4>Gastos Fixos</h4>
-      <div id="gastos-fixos">
-        <input placeholder="Nome" id="fixo-nome-1" />
-        <input placeholder="Valor" type="number" id="fixo-valor-1" />
-        <button onclick="salvarGastoFixo(1)">Salvar</button>
-      </div>
-      <h4>Gastos Variáveis</h4>
-      <div id="gastos-variaveis">
-        <input placeholder="Valor" type="number" id="var-valor-1" />
-        <select id="var-cat-1">
-          <option>Comida</option>
-          <option>Lazer</option>
-          <option>Transporte</option>
-          <option>Contas</option>
-        </select>
-        <button onclick="salvarGastoVariavel(1)">Adicionar</button>
-      </div>
-      <div>
-        <p>Total Gasto: R$ <span id="gasto-total">0.00</span></p>
-        <p>Saldo Restante: R$ <span id="saldo-restante">0.00</span></p>
-      </div>
-    </section>
-
-    <section id="meu-cartao" class="section" style="display: none">
-      <h3>Meu Cartão</h3>
-      <label>Limite: R$ <input type="number" id="limite-cartao" /></label>
-      <button onclick="salvarLimiteCartao()">Salvar Limite</button>
-      <h4>Gastos Fixos no Cartão</h4>
-      <input placeholder="Nome" id="cartao-fixo-nome-1" />
-      <input placeholder="Valor" type="number" id="cartao-fixo-valor-1" />
-      <button onclick="salvarCartaoFixo(1)">Salvar</button>
-      <h4>Gastos no Cartão</h4>
-      <input placeholder="Valor" type="number" id="cartao-gasto-valor-1" />
-      <select id="cartao-gasto-cat-1">
-        <option>Comida</option>
-        <option>Lazer</option>
-        <option>Transporte</option>
-        <option>Contas</option>
-      </select>
-      <button onclick="salvarCartaoGasto(1)">Adicionar</button>
-      <h4>Gastos de Outras Pessoas</h4>
-      <input placeholder="Nome" id="cartao-outro-nome-1" />
-      <input placeholder="Valor" type="number" id="cartao-outro-valor-1" />
-      <button onclick="salvarCartaoOutro(1)">Salvar</button>
-      <div>
-        <p>Total Gasto: R$ <span id="cartao-gasto-total">0.00</span></p>
-        <p>Gasto de Outros: R$ <span id="cartao-outros-total">0.00</span></p>
-        <p>Saldo Restante: R$ <span id="cartao-saldo-restante">0.00</span></p>
-      </div>
-    </section>
-
-    <section id="previsao" class="section" style="display: none">
-      <h3>Previsão de Gastos</h3>
-      <input type="month" id="previsao-mes" />
-      <input placeholder="Nome do Gasto" id="previsao-nome" />
-      <input placeholder="Valor" type="number" id="previsao-valor" />
-      <button onclick="salvarPrevisao()">Salvar Previsão</button>
-      <div>
-        <p>Total Previsto: R$ <span id="previsao-total">0.00</span></p>
-      </div>
-    </section>
-  </div>
-
+  <div id="root"></div>
   <script type="module" src="app.js"></script>
 </body>
 </html>
